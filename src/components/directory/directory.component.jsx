@@ -8,7 +8,6 @@ import './directory.styles.scss';
 import MenuItem from '../menu-item/menu-item.component';
 
 const Directory = ({ sectoins }) => {
-  console.log(sectoins);
   return (
     <div className='directory-menu'>
       {sectoins.map(({ id, ...otherSectionProps }) => (
