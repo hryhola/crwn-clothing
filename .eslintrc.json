@@ -25,7 +25,7 @@
       }
     ],
     "prettier/prettier": [
-      "error",
+      "off",
       {},
       {
         "usePrettierrc": true,
@@ -44,8 +44,10 @@
     "jsx-quotes": ["error", "prefer-single"],
     "react/prop-types": "off",
     "react/jsx-curly-newline": "off",
+    "react/state-in-constructor": "never",
     "no-alert": "off",
     "no-console": "off",
-    "object-curly-spacing": ["error", "always"]
+    "object-curly-spacing": ["error", "always"],
+    "import/prefer-default-export": "warn"
   }
 }

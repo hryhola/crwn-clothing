@@ -10,13 +10,16 @@ const config = {
   storageBucket: 'crwn-db-999.appspot.com',
   messagingSenderId: '111282735053',
   appId: '1:111282735053:web:a054a393b53ad6d1482684',
-  measurementId: 'G-PQ498LCDTK'
+  measurementId: 'G-PQ498LCDTK',
 };
 
 firebase.initializeApp(config);
 
+export const auth = firebase.auth();
+export const firestore = firebase.firestore();
+
 export const createProfieDocument = async (userAuth, additionalData) => {
-  if (!userAuth) return;
+  if (!userAuth) return null;
 
   const userRef = firestore.doc(`users/${userAuth.uid}`);
 
@@ -31,7 +34,7 @@ export const createProfieDocument = async (userAuth, additionalData) => {
         displayName,
         email,
         createdAt,
-        ...additionalData
+        ...additionalData,
       });
     } catch (error) {
       console.error('error creating user', error.message);
@@ -41,11 +44,44 @@ export const createProfieDocument = async (userAuth, additionalData) => {
   return userRef;
 };
 
-export const auth = firebase.auth();
-export const firestore = firebase.firestore();
-
 const provider = new firebase.auth.GoogleAuthProvider();
+
 provider.setCustomParameters({ prompt: 'select_account' });
+
 export const signInWithGoogle = () => auth.signInWithPopup(provider);
+
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd
+) => {
+  const collectionRef = firestore.collection(collectionKey);
+
+  const batch = firestore.batch();
+  objectsToAdd.forEach(obj => {
+    const newDocRef = collectionRef.doc();
+    batch.set(newDocRef, obj);
+  });
+
+  const commit = await batch.commit();
+
+  return commit;
+};
+
+export const convertCollectionsSnapshotToMap = collections => {
+  const transformCollection = collections.docs.map(doc => {
+    const { title, items } = doc.data();
+
+    return {
+      routeName: encodeURI(title.toLowerCase()),
+      id: doc.id,
+      title,
+      items,
+    };
+  });
+  return transformCollection.reduce((accumulator, collection) => {
+    accumulator[collection.title.toLowerCase()] = collection;
+    return accumulator;
+  }, {});
+};
 
 export default firebase;
